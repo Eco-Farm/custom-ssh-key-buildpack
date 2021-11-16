@@ -2,7 +2,7 @@
 # bin/compile <build-dir> <cache-dir> <env-dir>
 
 # Generates an SSH config file for connections if a config var exists.
-
+BUILD_DIR=$1
 ENV_DIR=$3
 
 if [[ -f $ENV_DIR/CUSTOM_SSH_KEY && -f $ENV_DIR/CUSTOM_SSH_KEY_HOSTS ]]; then
@@ -36,3 +36,10 @@ if [[ -f $ENV_DIR/CUSTOM_SSH_KEY && -f $ENV_DIR/CUSTOM_SSH_KEY_HOSTS ]]; then
   echo "-----> Successfully added custom SSH key"
 
 fi
+
+
+if [[ ! -f $ENV_DIR/PRODUCTION || "$(cat ${ENV_DIR}/PRODUCTION | awk '{print tolower($0)}')" != "true" ]]; then
+  echo "Adding staging requirements. (production: $(cat ${ENV_DIR}/PRODUCTION | awk '{print tolower($0)}'))"
+  echo -e "-r requirements/staging.txt" > $BUILD_DIR/requirements.txt
+fi
+echo $(cat ${BUILD_DIR}/requirements.txt)
